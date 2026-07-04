@@ -68,10 +68,10 @@ def get_attraction(city: str, weather: str) -> str:
                 cn_weather = cn_val
                 break
         recommendations = {
-            "晴朗": f"{city}天气晴朗，适合户外活动！推荐您去：\n- {city}故宫\n- 颐和园\n- 长城",
-            "多云": f"{city}天气多云，适合室内外结合！推荐您去：\n- 国家博物馆\n- 天坛\n- 南锣鼓巷",
-            "小雨": f"{city}有小雨，建议选择室内景点：\n- 中国科技馆\n- 首都博物馆\n- 798艺术区",
-            "阴天": f"{city}天气阴沉，适合文化场馆：\n- 北京天文馆\n- 自然博物馆\n- 前门大街",
+            "晴朗": f"{city}天气晴朗，适合户外活动！推荐您去：\n- 琅琊山：皖东明珠，欧阳修《醉翁亭记》所在地\n- 醉翁亭：中国四大名亭之首\n- 明皇陵：明代第一陵，朱元璋父母陵墓",
+            "多云": f"{city}天气多云，适合室内外结合！推荐您去：\n- 滁州博物馆：了解滁州历史文化\n- 琅琊寺：千年古刹，佛教胜地\n- 深秀湖：琅琊山景区内的山水湖泊",
+            "小雨": f"{city}有小雨，建议选择室内景点：\n- 滁州科技馆：互动科学体验\n- 吴敬梓纪念馆：儒林外史作者纪念馆\n- 凤阳鼓楼：明中都鼓楼",
+            "阴天": f"{city}天气阴沉，适合文化场馆：\n- 小岗村：中国农村改革发源地\n- 明中都遗址：明代都城遗址\n- 全椒太平古城：历史文化街区",
         }
         return recommendations.get(cn_weather, f"根据{weather}天气，推荐您前往{city}的各大知名景点游览。")
 
@@ -118,23 +118,23 @@ class MockLLMClient:
         self.round += 1
         print("正在调用大语言模型...")
         
-        if "查询一下今天北京的天气" in prompt and "Observation:" not in prompt:
-            return """Thought: 用户需要查询北京天气并推荐景点。首先我需要调用get_weather工具获取当前天气信息。
-Action: get_weather(city="北京")"""
+        if "查询一下今天滁州的天气" in prompt and "Observation:" not in prompt:
+            return """Thought: 用户需要查询滁州天气并推荐景点。首先我需要调用get_weather工具获取当前天气信息。
+Action: get_weather(city="滁州")"""
         
-        if "Observation: 北京当前天气" in prompt and "get_attraction" not in prompt:
+        if "Observation: 滁州当前天气" in prompt and "get_attraction" not in prompt:
             import re
-            match = re.search(r'北京当前天气：(.*?)，', prompt)
+            match = re.search(r'滁州当前天气：(.*?)，', prompt)
             weather = match.group(1) if match else "晴朗"
-            return f"""Thought: 已获取北京天气信息（{weather}），接下来需要根据天气调用get_attraction工具推荐合适的旅游景点。
-Action: get_attraction(city="北京", weather="{weather}")"""
+            return f"""Thought: 已获取滁州天气信息（{weather}），接下来需要根据天气调用get_attraction工具推荐合适的旅游景点。
+Action: get_attraction(city="滁州", weather="{weather}")"""
         
-        if "最值得去的景点" in prompt or "推荐您去" in prompt or "推荐您前往" in prompt:
+        if "最值得去的景点" in prompt or "推荐您去" in prompt or "推荐您前往" in prompt or "visit" in prompt.lower() or "scenic" in prompt.lower() or "recommend" in prompt.lower():
             return """Thought: 已获取天气和景点推荐信息，现在可以总结回答用户的问题了。
-Action: Finish[根据查询，今天北京天气不错，适合前往故宫、颐和园等知名景点游览。祝您旅途愉快！]"""
+Action: Finish[根据查询，今天滁州天气不错，适合前往琅琊山、醉翁亭等知名景点游览。祝您旅途愉快！]"""
         
         return """Thought: 我需要帮助用户解决问题。让我先了解当前的请求状态。
-Action: get_weather(city="北京")"""
+Action: get_weather(city="滁州")"""
 
 
 import re
@@ -152,7 +152,7 @@ llm = MockLLMClient(
 )
 
 
-user_prompt = "你好，请帮我查询一下今天北京的天气，然后根据天气推荐一个合适的旅游景点。"
+user_prompt = "你好，请帮我查询一下今天滁州的天气，然后根据天气推荐一个合适的旅游景点。"
 prompt_history = [f"用户请求: {user_prompt}"]
 
 print(f"用户输入: {user_prompt}\n" + "="*40)
